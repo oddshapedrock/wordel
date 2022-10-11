@@ -1,0 +1,96 @@
+import sys
+import turtle as tur
+from random import sample
+def main():
+    #create a list of all 5 letter words as contained in words.txt
+    word_list = []
+    with open("word_list.txt", "r") as file:
+        file = file.readline().split()
+        for word in file:
+            word_list.append(word)
+    #chose 1 random word from list
+    word = sample(word_list, 1)[0]
+
+    set_up_screen()
+
+    #gives player 6 attemps to guess correct
+    y_val = 125
+    for _ in range(6):
+        guess = input(":: ").upper()
+        while not guess in word_list:
+            print("Word invalid: Try another...")
+            guess = input(":: ").upper()
+        line = check_guess(word, guess)
+        draw_word(line, y_val)
+        if word == guess:
+            end_game(True, word)
+        y_val -= 50
+    end_game(False, word)
+
+def end_game(win, word):
+    tur.penup()
+    for index, letter in enumerate(word):
+        tur.goto(index * 50 - 100, -175)
+        tur.write(letter, align="center", font=("arial", 32, "normal"))
+    if win:
+        print("You got it!")
+    else:
+        print("Sorry you did not guess it.")
+    cont = input("Want to play again? (y/n): ")
+    if cont == "n":
+        sys.exit(0)
+    else:
+        main()
+
+def check_guess(word, guess):
+    word = [*word]
+    guess = [*guess]
+    print(word)
+    colors = []
+    for index, letter in enumerate(guess):
+        if letter is word[index]:
+            colors.append("GREEN")
+        elif letter in word and guess.count(letter) <= word.count(letter):
+            colors.append("YELLOW")
+        else:
+            colors.append("WHITE")
+    return [guess, colors]
+
+def draw_word(line, y_val):
+    for index, letter in enumerate(line[0]):
+        tur.penup()
+        tur.goto(index * 50 - 125, y_val + 50)
+        tur.pendown()
+        tur.color("BLACK", line[1][index])
+        tur.begin_fill()
+        draw_box()
+        tur.end_fill()
+        tur.penup()
+        #write letter
+        tur.goto(index * 50 -100, y_val)
+        tur.write(letter, align="center", font=("arial", 32, "normal"))
+
+def draw_box():
+    for _ in range(4):
+        tur.forward(50)
+        tur.right(90)
+
+def set_up_screen():
+    tur.setup(500, 500)
+    tur.clear()
+    tur.speed(0)
+    tur.delay(0)
+    tur.ht()
+    tur.color("BLACK", "BLUE")
+    for y in range(7):
+        for x in range(5):
+            if not y:
+                tur.begin_fill()
+            tur.penup()
+            tur.goto(x * 50 - 125, y * 50 - 125)
+            tur.pendown()
+            draw_box()
+            if not y:
+                tur.end_fill()
+
+main()

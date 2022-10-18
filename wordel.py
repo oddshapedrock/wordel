@@ -133,15 +133,29 @@ def end_game(win, word):
 def check_guess(word, guess):
     word = [*word]
     guess = [*guess]
+    origional = [*guess]
     colors = []
+    
     for index, letter in enumerate(guess):
+        #possible error remove duplicate values
+        indecies1 = [idx for idx, value in enumerate(guess) if value == letter]
+        indecies2 = [idx for idx, value in enumerate(word) if value == letter]
+        if not indecies1 <= indecies2:
+            amount = len(indecies2)
+            for indecie in indecies1:
+                if amount <= 0:
+                    guess[indecie] = "-"
+                amount -= 1
+        
+        print(guess)
+        
         if letter is word[index]:
             colors.append("GREEN")
         elif letter in word and guess.count(letter) <= word.count(letter):
             colors.append("YELLOW")
         else:
             colors.append("WHITE")
-    return [guess, colors]
+    return [origional, colors]
 
 def draw_word(line, y_val):
     for index, letter in enumerate(line[0]):
